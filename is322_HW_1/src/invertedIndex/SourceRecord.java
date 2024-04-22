@@ -10,6 +10,8 @@ package invertedIndex;
  *
  * @author ehab
  */
+
+// represent record or document
 public class SourceRecord {
     public int fid;
     public String URL;

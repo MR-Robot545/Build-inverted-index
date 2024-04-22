@@ -11,9 +11,9 @@ package invertedIndex;
  
 public class Posting {
 
-    public Posting next = null;
+    public Posting next = null; // linked list of next postings
     int docId;
-    int dtf = 1;
+    int dtf = 1; //  document term frequency or the number of times the term occurs in the document
 
     Posting(int id, int t) {
         docId = id;

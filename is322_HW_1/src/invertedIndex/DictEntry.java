@@ -4,8 +4,6 @@
  */
 package invertedIndex;
 
-import java.util.HashSet;
-
 /**
  *
  * @author ehab
@@ -15,11 +13,12 @@ public class DictEntry {
     public int doc_freq = 0; // number of documents that contain the term
     public int term_freq = 0; //number of times the term is mentioned in the collection
 //=====================================================================
-    public HashSet<Integer> postingList;
-    Posting pList = null;
+    //public HashSet<Integer> postingList;
+    Posting pList = null; // save a list of all postings regarding an entry
     Posting last = null;
 //------------------------------------------------
 
+    // Check if the postings list contains the document with ID 'i'
     boolean postingListContains(int i) {
         boolean found = false;
         Posting p = pList;
@@ -32,7 +31,7 @@ public class DictEntry {
         return found;
     }
 //------------------------------------------------
-
+// return dtf or document term frequency
     int getPosting(int i) {
         int found = 0;
         Posting p = pList;
@@ -49,9 +48,9 @@ public class DictEntry {
         return found;
     }
 //------------------------------------------------
-   //linked list of Posters
+    // add a new posting
     void addPosting(int i) {
-//         pList = new Posting(i);
+        // pList = new Posting(i);
         if (pList == null) {
             pList = new Posting(i);
             last = pList;
@@ -63,7 +62,7 @@ public class DictEntry {
 // implement insert (int docId) method
  
     DictEntry() {
-          postingList = new HashSet<Integer>();
+        //  postingList = new HashSet<Integer>();
     }
 
     DictEntry(int df, int tf) {

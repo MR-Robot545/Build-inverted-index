@@ -12,15 +12,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import static java.lang.Math.log10;
 import static java.lang.Math.sqrt;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+
+import java.util.*;
 import java.io.PrintWriter;
+import java.util.stream.Collectors;
 
 /**
  *
  * @author ehab
+ * @author HagarRagea
+ * @author YoussefKaram
+ * @author Shimaa
+ * @author AmalMohammed
+ * @author ShahdKhaled
  */
 public class Index5 {
 
@@ -42,17 +46,16 @@ public class Index5 {
 
 
     //---------------------------------------------
-    // print the documents that the word belongs to
+    //  prints the document IDs stored in a posting list given as a parameter
+    // prints all the documents in which the posting was mentioned
     public void printPostingList(Posting p) {
         // Iterator<Integer> it2 = hset.iterator();
         System.out.print("[");
         while (p != null) {
-            // if thw next is null this mean that the linked list is end
-            if(p.next==null){
-
-                System.out.print("" + p.docId );
-            }else{
-                System.out.print("" + p.docId + "," );
+            System.out.print("" + p.docId);
+            if (p.next != null)
+            {
+                System.out.print("," );
             }
             p = p.next;
         }
@@ -60,22 +63,24 @@ public class Index5 {
     }
 
     //---------------------------------------------
-    //print all terms and the it's frequency ane the number of documents that have this term
+    // Iterates over each entry in index and prints them it also prints doc_freq, term_freq, and total number of terms
+
     public void printDictionary() {
         Iterator it = index.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             DictEntry dd = (DictEntry) pair.getValue();
-            System.out.print("** [" + pair.getKey() + "," +dd.term_freq+","+ dd.doc_freq + "]       =--> ");
+            System.out.print("** [" + pair.getKey() + "," + dd.doc_freq+"," + dd.term_freq + "]       =--> ");
             printPostingList(dd.pList);
         }
         System.out.println("------------------------------------------------------");
         System.out.println("*** Number of terms = " + index.size());
     }
- 
+
     //-----------------------------------------------
-    //building the inverted index that take the file and iterate over all words and push all documents to every word belong to
-    public void buildIndex(String[] files) {  // from disk not from the internet
+
+    // Build the inverted index used for
+    public void buildIndex(String[] files) {
         int fid = 0;
         for (String fileName : files) {
             try (BufferedReader file = new BufferedReader(new FileReader(fileName))) {
@@ -95,17 +100,73 @@ public class Index5 {
             }
             fid++;
         }
-//           printDictionary();
+//        int fid = 0; // Initialize document ID counter
+//
+//        // Iterate over each file in the input array
+//        for (String fileName : files) {
+//            try (BufferedReader file = new BufferedReader(new FileReader(fileName))) {
+//                // Check if the file is already in the sources map, if not, add it
+//                if (!sources.containsKey(fileName)) {
+//                    sources.put(fid, new SourceRecord(fid, fileName, fileName, "notext"));
+//                }
+//                String ln;
+//                int flen = 0; // Initialize file length counter
+//
+//                // Read each line of the file
+//                while ((ln = file.readLine()) != null) {
+//                    String[] words = ln.split("\\W+"); // Split line into words
+//                    int lineLength = 0; // Initialize line length counter
+
+        // Process each word in the line
+//                    for (String word : words) {
+//                        word = word.toLowerCase(); // Convert word to lowercase
+//
+//                        // If the word is not in the index, add it
+//                        if (!index.containsKey(word)) {
+//                            index.put(word, new DictEntry());
+//                        }
+//                        DictEntry dictEntry = index.get(word);
+//                        // If the word is not already in the posting list for this document, update frequencies
+//                        if (!dictEntry.postingListContains(fid)) {
+//                            dictEntry.doc_freq++; // Increment document frequency
+//                            dictEntry.addPosting(fid);
+//                        }
+//                        dictEntry.term_freq++; // Increment term frequency
+//
+//                        lineLength += word.length(); // Increment line length by the length of the word
+//                    }
+//                    // Add additional characters for spaces between words
+//                    lineLength += words.length - 1;
+
+//                    flen += indexOneLine(ln,fid); // Update file length
+//                }
+//
+//                sources.get(fid).length = flen; // Update file length in sources map
+//            } catch (IOException e) {
+//                System.out.println("File " + fileName + " not found. Skip it");
+//            }
+//            fid++; // Increment document ID
+//        }
+
+        // Sorting the index
+//        HashMap<String, DictEntry> sortedIndex = index.entrySet().stream()
+//                .sorted(Map.Entry.comparingByKey())
+//                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue,
+//                        (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+//        index = sortedIndex; // Update index with sorted index
+
+        //   printDictionary(); // Print the sorted index
     }
 
-    //----------------------------------------------------------------------------
 
-//    get all words of given file and remove all stop words and make steaming for each word
+    // Helper method to process each line of text
+
+    //----------------------------------------------------------------------------  
     public int indexOneLine(String ln, int fid) {
         int flen = 0;
 
         String[] words = ln.split("\\W+");
-//         String[] words = ln.replaceAll("(?:[^a-zA-Z0-9 -]|(?<=\\w)-(?!\\S))", " ").toLowerCase().split("\\s+");
+        //   String[] words = ln.replaceAll("(?:[^a-zA-Z0-9 -]|(?<=\\w)-(?!\\S))", " ").toLowerCase().split("\\s+");
         flen += words.length;
         for (String word : words) {
             word = word.toLowerCase();
@@ -142,8 +203,10 @@ public class Index5 {
         return flen;
     }
 
+
 //----------------------------------------------------------------------------
-    // ignore all stop words
+    // if word equal to one of these return true
+
     boolean stopWord(String word) {
         if (word.equals("the") || word.equals("to") || word.equals("be") || word.equals("for") || word.equals("from") || word.equals("in")
                 || word.equals("a") || word.equals("into") || word.equals("by") || word.equals("or") || word.equals("and") || word.equals("that")) {
@@ -166,64 +229,90 @@ public class Index5 {
     }
 
     //----------------------------------------------------------------------------
-    // get all documents that intersect with all words
-    Posting intersect(Posting pL1, Posting pL2) {
+    /**
+     * Finds the intersection of two posting lists.
+     * Given two posting lists, pL1 and pL2, this function
+     * returns a new posting list containing the document IDs
+     * that appear in both pL1 and pL2.
+     *
+     * @param pL1 The first posting list.
+     * @param pL2 The second posting list.
+     * @return A new posting list containing the intersection
+     *         of pL1 and pL2.
+     */
 
+    Posting intersect(Posting pL1, Posting pL2) {
         Posting answer = null;
         Posting last = null;
-        while (pL1!=null&&pL2!=null){
-            if(pL1.docId==pL2.docId){
-                if(answer==null){
-                    answer=new Posting(pL1.docId);
-                    last=answer;
-                }else{
-                    last.next=new Posting(pL1.docId);
-                    last=last.next;
+
+        // Loop until one of the posting lists reaches its end
+        while (pL1 != null && pL2 != null)
+        {
+            // If the document IDs of the current postings are equal
+            if (pL1.docId == pL2.docId)
+            {
+                // Add the document ID to the answer
+                if (answer == null) {
+                    answer = new Posting(pL1.docId);
+                    last = answer;
+                } else {
+                    last.next = new Posting(pL1.docId);
+                    last = last.next;
                 }
-                pL1=pL1.next;
-                pL2=pL2.next;
-            }else{
-                if(pL1.docId<pL2.docId){
-                    pL1=pL1.next;
-                }else{
-                    pL2=pL2.next;
-                }
+                // Move both pointers to the next postings
+                pL1 = pL1.next;
+                pL2 = pL2.next;
+            }
+            else if (pL1.docId < pL2.docId)
+            { // If the document ID of pL1 is less than pL2
+                pL1 = pL1.next; // Move pL1 to the next posting
+            }
+            else
+            { // If the document ID of pL2 is less than pL1
+                pL2 = pL2.next; // Move pL2 to the next posting
             }
         }
-//      10 return answer
         return answer;
     }
-//    get a set of words and return a list of intersect documents between the words
-    public String find_24_01(String phrase) { // any mumber of terms non-optimized search 
+
+    // Searches for documents containing all terms in the input phrase
+
+    public Pair2 find_24_01(String phrase) { // any mumber of terms non-optimized search
         String result = "";
         String[] words = phrase.split("\\W+");
         int len = words.length;
-        
+
         //fix this if word is not in the hash table will crash...
         if(!index.containsKey(words[0].toLowerCase())){
-            result="not found";
-            return result;
+            result="Not found";
+            return new Pair2(result,null);
         }
         Posting posting = index.get(words[0].toLowerCase()).pList;
         int i = 1;
         while (i < len) {
+            if(!index.containsKey(words[i].toLowerCase())){
+                result="Not found";
+                return  new Pair2(result,null);
+            }
             posting = intersect(posting, index.get(words[i].toLowerCase()).pList);
             i++;
         }
+        Posting temp=posting;
         while (posting != null) {
             //System.out.println("\t" + sources.get(num));
             result += "\t" + posting.docId + " - " + sources.get(posting.docId).title + " - " + sources.get(posting.docId).length + "\n";
             posting = posting.next;
         }
         if(result.isEmpty()){
-            result="not found";
+            result="notfound";
         }
-        return result;
+        return new Pair2(result,temp);
     }
-    
-    
+
+
     //---------------------------------
-//    sort the words
+    // This function implements a bubble sort algorithm to sort an array of strings as the parameter @param words
+
     String[] sort(String[] words) {  //bubble sort
         boolean sorted = false;
         String sTmp;
@@ -243,11 +332,13 @@ public class Index5 {
         return words;
     }
 
-     //---------------------------------
-    // store the information of all documents in index file and the inverted index after building it
+    //---------------------------------
+
+    // store file physically on the hard disk
+
     public void store(String storageName) {
         try {
-            String pathToStorage = "tmp11\\tmp11\\rl\\"+storageName;
+            String pathToStorage = "tmp11\\rl"+storageName;
             Writer wr = new FileWriter(pathToStorage);
             for (Map.Entry<Integer, SourceRecord> entry : sources.entrySet()) {
                 System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue().URL + ", Value = " + entry.getValue().title + ", Value = " + entry.getValue().text);
@@ -283,31 +374,37 @@ public class Index5 {
         }
     }
 //=========================================
-    // check the existance of the file
+    // check the if the storage file exists
+
+
+
     public boolean storageFileExists(String storageName){
-        java.io.File f = new java.io.File("tmp11\\tmp11\\rl\\"+storageName);
+        java.io.File f = new java.io.File("tmp11\\rl"+storageName);
         if (f.exists() && !f.isDirectory())
             return true;
         return false;
-            
+
     }
-//----------------------------------------------------    
+//----------------------------------------------------
+
+// create file to store
+
     public void createStore(String storageName) {
         try {
-            String pathToStorage = "tmp11\\tmp11\\"+storageName;
+            String pathToStorage = "tmp11\\rl"+storageName;
             Writer wr = new FileWriter(pathToStorage);
             wr.write("end" + "\n");
             wr.close();
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-//----------------------------------------------------      
-     //load index from hard disk into memory
+    //----------------------------------------------------
+    //load index from hard disk into memory
     public HashMap<String, DictEntry> load(String storageName) {
         try {
-            String pathToStorage = "tmp11\\tmp11\\rl\\"+storageName;
+            String pathToStorage = "tmp11\\rl"+storageName;
             sources = new HashMap<Integer, SourceRecord>();
             index = new HashMap<String, DictEntry>();
             BufferedReader file = new BufferedReader(new FileReader(pathToStorage));
@@ -359,6 +456,10 @@ public class Index5 {
         }
         return index;
     }
+
+
+//
+
 }
 
 //=====================================================================
