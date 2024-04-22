@@ -1,8 +1,0 @@
-Dictionary entry:-
- main goal
-    linked list of posters with document frequency and the frq of the term
-
-posting:-
-    Posting next = null; // pointer that has the address of the next
-    int docId;  // the document number
-    int dtf = 1; // i don't know
