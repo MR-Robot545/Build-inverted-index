@@ -10,17 +10,11 @@ import java.io.FileWriter;
 import java.io.Writer;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.io.PrintWriter;
 
 import static java.lang.Math.*;
 
-
-import java.util.ArrayDeque;
-import java.util.Deque;
 /**
  *
  * @author ehab
@@ -32,6 +26,8 @@ public class Index5 {
     public Map<Integer, SourceRecord> sources;  // store the doc_id and the file name.
 
     public HashMap<String, DictEntry> index; // THe inverted index
+    int cnt=0;
+
     //--------------------------------------------
 
     public Index5() {
@@ -51,19 +47,22 @@ public class Index5 {
         System.out.print("[");
         while (p != null) {
             // if thw next is null this mean that the linked list is end
-            if(p.next==null){
-
-                System.out.print("" + p.docId );
-            }else{
-                System.out.print("" + p.docId + "," );
+            System.out.print("{");
+            System.out.print("Doc= " + p.docId );
+            if(!p.postions.isEmpty()){
+                System.out.print(" | positions= ");
+                for (int i=0;i<p.postions.size();i++){
+                    System.out.print(p.postions.get(i));
+                    if(i<p.postions.size()-1){
+                        System.out.print(',');
+                    }
+                }
             }
+            System.out.print("}");
             p = p.next;
         }
         System.out.println("]");
     }
-
-    //---------------------------------------------
-    //print all terms and the it's frequency ane the number of documents that have this term
     public void printDictionary() {
         Iterator it = index.entrySet().iterator();
         while (it.hasNext()) {
@@ -75,7 +74,7 @@ public class Index5 {
         System.out.println("------------------------------------------------------");
         System.out.println("*** Number of terms = " + index.size());
     }
- 
+
     //-----------------------------------------------
     //building the inverted index that take the file and iterate over all words and push all documents to every word belong to
     public void buildIndex(String[] files) {  // from disk not from the internet
@@ -87,6 +86,7 @@ public class Index5 {
                 }
                 String ln;
                 int flen = 0;
+                cnt=0;
                 while ((ln = file.readLine()) != null) {
 
                     flen +=  indexOneLine(ln, fid);
@@ -144,6 +144,7 @@ public class Index5 {
             word = stemWord(word);
 
             AddWord(word,fid,ln);
+            index.get(word).last.postions.addLast(++cnt);
             // build bi word index
             if(dq.size()<2){
                 dq.addLast(word);
@@ -295,6 +296,17 @@ public class Index5 {
                 while (p != null) {
                     //    System.out.print( p.docId + "," + p.dtf + ":");
                     wr.write(p.docId + "," + p.dtf + ":");
+                    if(!p.postions.isEmpty()){
+                        wr.write("{");
+                        wr.write("positions=");
+                        for (int i=0;i<p.postions.size();i++){
+                            wr.write(p.postions.get(i).toString());
+                            if(i<p.postions.size()-1){
+                                wr.write(',');
+                            }
+                        }
+                        wr.write("}");
+                    }
                     p = p.next;
                 }
                 wr.write("\n");

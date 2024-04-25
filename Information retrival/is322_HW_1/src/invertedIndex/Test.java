@@ -14,7 +14,9 @@ import java.util.Scanner;
 
 /**
  *
- * @author ehab
+ * @author Zeyad Farag 20200203
+ * @author Ali  Safwat 20201118
+ * @author Ahmed Said 20200017
  */
 public class Test {
 
@@ -22,10 +24,11 @@ public class Test {
         Index5 index = new Index5();
         BiWord biword = new BiWord();
         Bouns Bo = new Bouns();
+        PostionalIndex pos = new PostionalIndex();
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         //|**  change it to your collection directory
         //|**  in windows "C:\\tmp11\\rl\\collection\\"       
-        String files = "tmp11\\tmp11\\rl\\test\\";
+        String files = "tmp11\\tmp11\\rl\\collection\\";
 
         File file = new File(files);
         //|** String[] 	list()
@@ -41,7 +44,9 @@ public class Test {
         index.buildIndex(fileList);
         index.store("index");
         index.printDictionary();
-
+//        pos.buildIndex(fileList);
+//        pos.store("index");
+//        pos.printDictionary();
 //        String test3 = "data  should plain greatest comif"; // data  should plain greatest comif
 //        System.out.println("Boo0lean Model result = \n" + index.find_24_01(test3));
 
@@ -78,7 +83,17 @@ public class Test {
 
                 } while (!phrase.isEmpty());
             }else if(Objects.equals(choice, "3")){
+                String phrase = "";
+                do {
+                    System.out.println("Print search phrase: ");
+                    phrase = in.readLine();
+                    if(phrase.isEmpty()) {
+                        System.out.println("the program is end");
+                        break;
+                    }
+                    System.out.println("Boo0lean Model result = \n" + pos.findpostional(phrase,index));
 
+                } while (!phrase.isEmpty());
             }else if(Objects.equals(choice, "4")){
                 String phrase = "";
                 do {

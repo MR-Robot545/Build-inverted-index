@@ -60,8 +60,20 @@ public class DictEntry {
             last = last.next;
         }
     }
+    // get doc
+    public Posting get_doc(int doc){
+        int found = 0;
+        Posting p = pList;
+        while (p != null) {
+            if (p.docId == doc) {
+                return p;
+            }
+            p = p.next;
+        }
+        return null;
+    }
 // implement insert (int docId) method
- 
+
     DictEntry() {
           postingList = new HashSet<Integer>();
     }
